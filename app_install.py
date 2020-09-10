@@ -1,0 +1,172 @@
+
+# print('waiting for input')
+# print(input())
+import os
+import subprocess
+
+from config_strings import *
+
+
+
+def react_install( name, port, nginx_path ):
+    """ Installs the react app by creating ecosystem and nginx
+    configuration files and starting the pm2 app and reseting
+    nginx to enable the new proxy
+
+    Parameters
+    ----------
+    name : string
+        Application name
+    port : int
+        port number
+    nginx_path : sting
+        path where nginx configuration files are stored
+
+    Returns
+    -------
+    type
+        Description of returned object.
+
+    """
+
+    # perform check to see if the ecosystem exists.
+    # poll user to overwrite file
+    create_ecosystem = True
+    if os.path.exists( 'ecosystem.config.js') :
+        print( '\nOverwrite the ecosystem file (y/n)' )
+        user_input = input()
+        if( user_input.lower() == 'n' ): create_ecosystem = False
+
+    # create/overwrite the ecosystem file
+    if create_ecosystem :
+        print( '...creating ecosystem file' )
+        file = open('ecosystem.config.js', 'w')
+        file.write( react_ecosystem(name, port) )
+        file.close()
+
+    # perform check to see if the nginx config file exists.
+    # poll user to overwrite file
+    create_nginx = True
+    if os.path.exists( nginx_path + '%s.conf' % name ) :
+        print( '\nOverwrite the nginx file (y/n)' )
+        user_input = input()
+        if( user_input.lower() == 'n' ): create_nginx = False
+
+    # create/overwrite the nginx config file
+    if create_nginx :
+        print( '...creating nginx config file' )
+        file = open(nginx_path + '%s.conf' % name, 'w')
+        file.write( nginx_conf(name, port) )
+        file.close()
+
+    subprocess.call(['service', 'nginx', 'restart'], shell=True)
+    subprocess.call(['pm2', 'start', 'ecosystem.config.js'], shell=True)
+
+
+
+def django_install( name, port, nginx_path ):
+    """ Installs the django app by creating ecosystem and nginx
+    configuration files and starting the pm2 app and reseting
+    nginx to enable the new proxy.
+
+    Additionally, a virtual environment is created in the local
+    directory. This requires a requirements.txt file in order to
+    know what packages need to be installed
+
+    Parameters
+    ----------
+    name : string
+        Application name
+    port : int
+        port number
+    nginx_path : sting
+        path where nginx configuration files are stored
+
+    Returns
+    -------
+    type
+        Description of returned object.
+
+    """
+
+    # create a virtual environment directory when one does not exist
+    if not os.path.exists( 'virenv' ):
+        # raise error when a requirements.txt doesn't exist
+        if not os.path.exists( 'requirements.txt' ):
+            print( """cannot install the django applications without a requirements.txt file
+                python -m pip freeze > requirements.txt
+            """)
+            return
+
+        subprocess.call(['python3', '-m', 'venv', 'virenv'], shell=True)
+        subprocess.call(['virenv/bin/python3', '-m', 'pip', 'install', '-r', 'requirements.txt'], shell=True)
+
+    # perform check to see if the ecosystem exists.
+    # poll user to overwrite file
+    create_ecosystem = True
+    if os.path.exists( 'ecosystem.config.js') :
+        print( '\nOverwrite the ecosystem file (y/n)' )
+        user_input = input()
+        if( user_input.lower() == 'n' ): create_ecosystem = False
+
+    # create/overwrite the ecosystem file
+    if create_ecosystem :
+        print( '...creating ecosystem file' )
+        file = open('ecosystem.config.js', 'w')
+        file.write( react_ecosystem(name, port) )
+        file.close()
+
+    # perform check to see if the nginx config file exists.
+    # poll user to overwrite file
+    create_nginx = True
+    if os.path.exists( nginx_path + '%s.conf' % name ) :
+        print( '\nOverwrite the nginx file (y/n)' )
+        user_input = input()
+        if( user_input.lower() == 'n' ): create_nginx = False
+
+    # create/overwrite the nginx config file
+    if create_nginx :
+        print( '...creating nginx config file' )
+        file = open(nginx_path + '%s.conf' % name, 'w')
+        file.write( nginx_conf(name, port) )
+        file.close()
+
+    subprocess.call(['service', 'nginx', 'restart'], shell=True)
+    subprocess.call(['pm2', 'start', 'ecosystem.config.js'], shell=True)
+
+
+
+
+def install(product, name, port):
+    """ installs the configuration files based on the specifications """
+    # path = '/etc/nginx/default.d/'
+    path = './'
+    if( product.lower() == 'react' ):
+        react_environment(name, port, path)
+
+    elif( product.lower() == 'django' ):
+        django_install(name, port, path)
+
+    else:
+        print( 'unknown product type : %s' % product )
+
+
+def command_line_interface():
+
+    print( 'product type (django or react)' )
+    product = input().lower()
+
+    print( '\nproduct name' )
+    name = input().lower()
+
+    print( '\nport' )
+    port = input().lower()
+
+
+    install( product, name, port )
+
+
+
+
+command_line_interface()
+# react_install( 'TestApp', 1111, './' )
