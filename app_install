@@ -1,4 +1,5 @@
-
+#!/usr/bin/python3
+#
 # print('waiting for input')
 # print(input())
 import os
@@ -59,8 +60,8 @@ def react_install( name, port, nginx_path ):
         file.write( nginx_conf(name, port) )
         file.close()
 
-    subprocess.call(['service', 'nginx', 'restart'], shell=True)
-    subprocess.call(['pm2', 'start', 'ecosystem.config.js'], shell=True)
+    subprocess.call(['service nginx restart'], shell=True)
+    subprocess.call(['pm2 start ecosystem.config.js'], shell=True)
 
 
 
@@ -98,8 +99,9 @@ def django_install( name, port, nginx_path ):
             """)
             return
 
-        subprocess.call(['python3', '-m', 'venv', 'virenv'], shell=True)
-        subprocess.call(['virenv/bin/python3', '-m', 'pip', 'install', '-r', 'requirements.txt'], shell=True)
+        print( 'installing virtual environment and all dependencies from requirements.txt' )
+        subprocess.call(['python3 -m venv virenv'], shell=True)
+        subprocess.call(['virenv/bin/python3 -m pip install -r requirements.txt'], shell=True)
 
     # perform check to see if the ecosystem exists.
     # poll user to overwrite file
@@ -113,7 +115,7 @@ def django_install( name, port, nginx_path ):
     if create_ecosystem :
         print( '...creating ecosystem file' )
         file = open('ecosystem.config.js', 'w')
-        file.write( react_ecosystem(name, port) )
+        file.write( django_ecosystem(name, port) )
         file.close()
 
     # perform check to see if the nginx config file exists.
@@ -131,18 +133,19 @@ def django_install( name, port, nginx_path ):
         file.write( nginx_conf(name, port) )
         file.close()
 
-    subprocess.call(['service', 'nginx', 'restart'], shell=True)
-    subprocess.call(['pm2', 'start', 'ecosystem.config.js'], shell=True)
+    subprocess.call(['service nginx restart'], shell=True)
+    subprocess.call(['pm2 start ecosystem.config.js'], shell=True)
 
 
 
 
 def install(product, name, port):
     """ installs the configuration files based on the specifications """
-    # path = '/etc/nginx/default.d/'
-    path = './'
+    
+    path = '/etc/nginx/default.d/'
+    # path = './'
     if( product.lower() == 'react' ):
-        react_environment(name, port, path)
+        react_install(name, port, path)
 
     elif( product.lower() == 'django' ):
         django_install(name, port, path)

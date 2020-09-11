@@ -10,7 +10,7 @@ pm2 and nginx for react and django applications
 
 """
 
-
+import os
 
 def react_ecosystem( name, port ):
     """ returns the pm2 ecosystem configuration string for react apps """
