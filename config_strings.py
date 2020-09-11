@@ -75,4 +75,13 @@ proxy_pass http://127.0.0.1:%s;
 proxy_redirect off;
 
 }
-    """ % (name, port)
+
+
+location /%s/static {
+    autoindex on;
+    alias %s/build/static;
+}
+
+
+
+    """ % (name, port, name, os.getcwd())
