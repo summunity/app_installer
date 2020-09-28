@@ -62,6 +62,10 @@ def react_install( name, port, nginx_path ):
 
     subprocess.call(['service nginx restart'], shell=True)
     subprocess.call(['pm2 start ecosystem.config.js'], shell=True)
+    subprocess.call(['chmod 775 -R build'], shell=True)
+    
+    cwd = os.getcwd()
+    subprocess.call(['chmod 775 -R %s' % cwd], shell=True)
 
 
 
