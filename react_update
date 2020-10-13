@@ -1,0 +1,5 @@
+#!/usr/bin/python3
+import subprocess
+subprocess.call(['git stash'], shell=True)
+subprocess.call(['git pull'], shell=True)
+subprocess.call(['chmod 775 -R build'], shell=True)
