@@ -65,7 +65,16 @@ module.exports = {
 def nginx_conf( name, port ):
     """ returns the nginx configuration string """
     return """
+
 location /%s {
+    rewrite ^ /%s/ permanent;
+}
+
+# location ~ /%s/(.*)/ {
+#    rewrite ^ /%s/ permanent;
+#}
+
+location /%s/ {
 
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 proxy_set_header X-Forwarded-Proto $scheme;
@@ -84,4 +93,15 @@ location /%s/static {
 
 
 
-    """ % (name, port, name, os.getcwd())
+    """ % (
+        name,
+        name,
+        name,
+        name,
+
+        name, 
+        port, 
+        name, 
+        os.getcwd(),
+
+    )
