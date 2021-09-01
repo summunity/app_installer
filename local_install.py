@@ -10,7 +10,9 @@ from config_strings import *
 
 def ecosystem(name, port, product):
     """ create an ecosystem file """
+    import os
 
+    print( 'creating file: %s/ecosystem.config.js' % (os.getcwd()) )
     file = open('ecosystem.config.js', 'w')
 
     if product.lower() == 'react':
@@ -21,7 +23,7 @@ def ecosystem(name, port, product):
     file.close()
 
 def nginx_config(name, port, nginx_path):
-
+    print( 'creating file: %s' % (nginx_path + '%s.conf' % name) )
     file = open(nginx_path + '%s.conf' % name, 'w')
     file.write( nginx_conf(name, port) )
     file.close()
@@ -47,10 +49,12 @@ def create_virenv():
 def install(product, path, name, port):
     """ installs the configuration files based on the specifications """
 
+    os.chdir(path)
+    
     import platform
     linux_dist = platform.linux_distribution()[0]
 
-    if linx_dist == 'Red Hat Enterprise Linux Server'
+    if linux_dist == 'Red Hat Enterprise Linux Server':
         nginx_path = '/etc/nginx/default.d/'
     else:
         nginx_path = '/etc/nginx/sites-enabled/'
@@ -58,7 +62,6 @@ def install(product, path, name, port):
     nginx_config(name, port, nginx_path)
 
     # change the directory to where the code exists
-    os.chdir(path)
     ecosystem(name, port, product)
 
     if product == 'django':
@@ -79,5 +82,3 @@ def install(product, path, name, port):
 
 
 
-command_line_interface()
-# react_install( 'TestApp', 1111, './' )
