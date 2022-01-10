@@ -12,6 +12,12 @@ pm2 and nginx for react and django applications
 
 import os
 
+def pm2_serve( name, port ):
+    """ returns the pm2 serve string """
+
+    return "pm2 serve build %s --spa --name %s" % (port, name)
+
+
 def react_ecosystem( name, port ):
     """ returns the pm2 ecosystem configuration string for react apps """
     return """
@@ -99,9 +105,9 @@ location /%s/static {
         name,
         name,
 
-        name, 
-        port, 
-        name, 
+        name,
+        port,
+        name,
         os.getcwd(),
 
     )

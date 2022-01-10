@@ -30,20 +30,20 @@ def react_install( name, port, nginx_path ):
 
     """
 
-    # perform check to see if the ecosystem exists.
-    # poll user to overwrite file
-    create_ecosystem = True
-    if os.path.exists( 'ecosystem.config.js') :
-        print( '\nOverwrite the ecosystem file (y/n)' )
-        user_input = input()
-        if( user_input.lower() == 'n' ): create_ecosystem = False
-
-    # create/overwrite the ecosystem file
-    if create_ecosystem :
-        print( '...creating ecosystem file' )
-        file = open('ecosystem.config.js', 'w')
-        file.write( react_ecosystem(name, port) )
-        file.close()
+    # # perform check to see if the ecosystem exists.
+    # # poll user to overwrite file
+    # create_ecosystem = True
+    # if os.path.exists( 'ecosystem.config.js') :
+    #     print( '\nOverwrite the ecosystem file (y/n)' )
+    #     user_input = input()
+    #     if( user_input.lower() == 'n' ): create_ecosystem = False
+    #
+    # # create/overwrite the ecosystem file
+    # if create_ecosystem :
+    #     print( '...creating ecosystem file' )
+    #     file = open('ecosystem.config.js', 'w')
+    #     file.write( react_ecosystem(name, port) )
+    #     file.close()
 
     # perform check to see if the nginx config file exists.
     # poll user to overwrite file
@@ -61,9 +61,10 @@ def react_install( name, port, nginx_path ):
         file.close()
 
     subprocess.call(['service nginx restart'], shell=True)
-    subprocess.call(['pm2 start ecosystem.config.js'], shell=True)
+    # subprocess.call(['pm2 start ecosystem.config.js'], shell=True)
+    subprocess.call([pm2_serve(name, port)], shell=True)
     subprocess.call(['chmod 775 -R build'], shell=True)
-    
+
     cwd = os.getcwd()
     subprocess.call(['chmod 775 -R %s' % cwd], shell=True)
 
@@ -145,12 +146,12 @@ def django_install( name, port, nginx_path ):
 
 def install(product, name, port):
     """ installs the configuration files based on the specifications """
-    
+
     import os
 
     path = '/etc/nginx/default.d/'
     unix = 'CentOS'
-    if not os.path.exists(path): 
+    if not os.path.exists(path):
         path = '/etc/nginx/sites-available/'
         unix = 'Ubuntu'
 
